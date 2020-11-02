@@ -86,11 +86,18 @@ build.country.graphic <- function(country){
   data2 <- data.frame(x = data$X.U.FEFF.Date_reported,y = data$Cumulative_cases,z = data$Cumulative_deaths)
   data2$x <- as.Date(data2$x)
   #data2 <- tail(data2,14)
-  ggplot(data2, aes(x), width=100, height=100,show.legend = FALSE) + 
-    geom_line(aes(y = y, colour = "red")) + 
-    geom_line(aes(y = z, colour = "blue"))+
-    ylab('Aantalen')+xlab('Datum')+
-    scale_colour_manual(name = 'Legend',values =c('blue'='blue','red'='red'), labels = c('Gevallen','Sterf'))
+  
+  data$X.U.FEFF.Date_reported <- as.Date(data$X.U.FEFF.Date_reported)
+  
+  plot(data$X.U.FEFF.Date_reported,data$Cumulative_cases,type = "h",ylab="Aantal", xlab = "")
+    axis.POSIXct(1, at=data$X.U.FEFF.Date_reported, format="%b")
+      title(main="Besmettingen")
+   
+  #ggplot(data2, aes(x), width=100, height=100,show.legend = FALSE) + 
+   # geom_line(aes(y = y, colour = "red")) + 
+    #geom_line(aes(y = z, colour = "blue"))+
+    #ylab('Aantalen')+xlab('Datum')+
+    #scale_colour_manual(name = 'Legend',values =c('blue'='blue','red'='red'), labels = c('Gevallen','Sterf'))
 }
 
 
