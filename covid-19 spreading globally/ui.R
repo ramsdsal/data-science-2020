@@ -1,57 +1,50 @@
 library(shiny)
-library(ggplot2)
+source("main.R")
 
-dataset <- diamonds
-
-ui <- fluidPage(
+countries.list <- get.countries.list()
   
-  title = "Diamonds Explorer",
-  fluidRow(
-    column(width = 4, offset = 8,
-           selectInput(inputId = "country", choices = c("A","B"), label="Select you country")
-      
-    )
-  ),
-  
-  plotOutput('distPlot'),
-  
-  hr(),
-  
-  fluidRow(
-    column(3,
-           h4("Diamonds Explorer"),
-           sliderInput('sampleSize', 'Sample Size', 
-                       min=1, max=nrow(dataset), value=min(1000, nrow(dataset)), 
-                       step=500, round=0),
-           br(),
-           checkboxInput('jitter', 'Jitter'),
-           checkboxInput('smooth', 'Smooth')
-    ),
-    column(4, offset = 1,
-           selectInput('x', 'X', names(dataset)),
-           selectInput('y', 'Y', names(dataset), names(dataset)[[2]]),
-           selectInput('color', 'Color', c('None', names(dataset)))
-    ),
-    column(4,
-           selectInput('facet_row', 'Facet Row', c(None='.', names(dataset))),
-           selectInput('facet_col', 'Facet Column', c(None='.', names(dataset)))
-    )
-  )
+ui <- fluidPage(title = "Covid-19 Geographically overview",
+               fluidRow(
+                    column(width = 6, offset = 1, h3(paste("Geographically overview - covid-19"))),
+                    column(width = 4, offset = 8, selectInput(
+                                                                inputId = "select.country",
+                                                                choices = unique(countries.list),
+                                                                label = "Selecteer je land",
+                                                                selected = "Wereldwide"
+                                                              )
+                           )
+                ),
+                leafletOutput("world.map"),
+                hr(),
+                wellPanel(
+                  fluidRow(
+                    
+                      column(width = 4,"Geselecteerd optie",h2(textOutput("country.txt"))),
+                      column(width = 4,"Totaal aantal gevallen",h4(textOutput("confirmed.cases.txt")), align="center"),
+                      column(width = 4,"Sterfgevallen", h4(textOutput("confirmed.deaths.txt")), align="center"),
+                  ),
+                  fluidRow(
+                    column(width = 12,
+                           checkboxInput(inputId = "moreinfo", label = "Meer informatie bekijken", value = FALSE),
+                           conditionalPanel(
+                              condition = "input.moreinfo == true",
+                                fluidRow(
+                                        column(width = 4,
+                                           dateRangeInput("date", 
+                                                          "Selecteer een datum interval",
+                                                              start = "2020-01-01",
+                                                                end = Sys.Date(),
+                                                                  min = "2020-01-01",
+                                                                    max = Sys.Date())
+                                        ),
+                                        column(width = 4,style = "margin-top: 25px;", actionButton(inputId = "date.range", label="Update")),
+                                        column(width = 2)
+                                ),
+                              fluidRow(width = 12,
+                                        plotOutput("plot.evaluation")
+                              )
+                           )
+                    )
+                  )
+                )
 )
-
-server <- function(input, output) {
-  
- 
-  output$plot <- renderPlot({
-    
-    x    <- faithful$waiting
-    bins <- seq(min(x), max(x), length.out = input$bins + 1)
-    
-    hist(x, breaks = bins, col = "#75AADB", border = "white",
-         xlab = "Waiting time to next eruption (in mins)",
-         main = "Histogram of waiting times")
-    
-  })
-  
-}
-shinyApp(ui = ui, server = server)
