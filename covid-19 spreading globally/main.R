@@ -2,8 +2,8 @@
 
 
 #load countries coordinates
-country <- read.csv("countries.csv", sep = ",",encoding = "UTF-8")
-covid.19 <- read.csv("global-data.csv", sep = ",", stringsAsFactors = FALSE,encoding = "UTF-8")
+country <- read.csv("datasets/countries.csv", sep = ",",encoding = "UTF-8")
+covid.19 <- read.csv("datasets/global-data.csv", sep = ",", stringsAsFactors = FALSE,encoding = "UTF-8")
 
 
 #function: no input, return unique countries name list
@@ -14,6 +14,17 @@ get.countries.list <- function(){
   return(new)
 }
 
+get.last.numbers <- function(){
+  covid.19.last.cum.numbers <- covid.19 %>% group_by(Country) %>% slice(n()) 
+  covid.19.last.cum.numbers <- covid.19.last.cum.numbers[c(3,6,8:8)]
+  return(covid.19.last.cum.numbers)
+}
+
+get.rank.countries <- function(){
+  data <- get.last.numbers()
+  data <- data[order(data$Cumulative_cases,decreasing = TRUE),]
+  return(head(data,5))
+}
 
 #function: no input, return a data.frame with countries and coordinates
 build.map <- function(){
@@ -24,9 +35,8 @@ build.map <- function(){
   country  <- country[, c(2:4)]
   
   #subset with the last cumulative numbers
-  covid.19.last.cum.numbers <- covid.19 %>% group_by(Country) %>% slice(n()) 
-  covid.19.last.cum.numbers <- covid.19.last.cum.numbers[c(3,6,8:8)]
   
+  covid.19.last.cum.numbers <- get.last.numbers()
   #merge countries with cumulative data
   country <- merge(country,covid.19.last.cum.numbers, by.x = "name", by.y = "Country", all.x=TRUE)
   
@@ -81,23 +91,38 @@ build.wereldwide.graphic <- function(){
 #build country graphic
 build.country.graphic <- function(country){
   
-  data <- covid.19 %>% filter(Country == country$name)
-  data <- data[,c(1,6,8)]
-  data2 <- data.frame(x = data$X.U.FEFF.Date_reported,y = data$Cumulative_cases,z = data$Cumulative_deaths)
-  data2$x <- as.Date(data2$x)
-  #data2 <- tail(data2,14)
-  
-  data$X.U.FEFF.Date_reported <- as.Date(data$X.U.FEFF.Date_reported)
-  
-  plot(data$X.U.FEFF.Date_reported,data$Cumulative_cases,type = "h",ylab="Aantal", xlab = "")
-    axis.POSIXct(1, at=data$X.U.FEFF.Date_reported, format="%b")
-      title(main="Besmettingen")
-   
-  #ggplot(data2, aes(x), width=100, height=100,show.legend = FALSE) + 
-   # geom_line(aes(y = y, colour = "red")) + 
-    #geom_line(aes(y = z, colour = "blue"))+
-    #ylab('Aantalen')+xlab('Datum')+
-    #scale_colour_manual(name = 'Legend',values =c('blue'='blue','red'='red'), labels = c('Gevallen','Sterf'))
+  if(country$name == "Wereldwide"){
+    d <- get.rank.countries()
+    
+    data <- data.frame(
+      name=d$Country,
+      val=d$Cumulative_cases
+    )
+    
+    data %>%
+      mutate(name = fct_reorder(name, val)) %>%
+      ggplot( aes(x=name, y=val)) +
+      geom_bar(stat="identity", fill="#f68060", alpha=.6, width=.4) +
+      
+      xlab("") +
+      theme_bw()
+    
+  }else{
+    tryCatch(
+      expr = {
+        
+        data <- covid.19 %>% filter(Country == country$name)
+        data <- covid.19 %>% filter(Country == country$name)
+        data <- data[,c(1,6,8)]
+        
+        data$X.U.FEFF.Date_reported <- as.Date(data$X.U.FEFF.Date_reported)
+        
+        plot(data$X.U.FEFF.Date_reported,data$Cumulative_cases,type = "h",ylab="Aantal", xlab = "")
+        axis.POSIXct(1, at=data$X.U.FEFF.Date_reported, format="%b")
+        title(main="Besmettingen")
+      }
+    )
+  }
 }
 
 
