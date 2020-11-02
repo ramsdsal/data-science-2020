@@ -1,5 +1,5 @@
 #script with all functions
-
+library(forcats)
 
 #load countries coordinates
 country <- read.csv("datasets/countries.csv", sep = ",",encoding = "UTF-8")
@@ -103,7 +103,7 @@ build.country.graphic <- function(country){
       mutate(name = fct_reorder(name, val)) %>%
       ggplot( aes(x=name, y=val)) +
       geom_bar(stat="identity", fill="#f68060", alpha=.6, width=.4) +
-      
+      coord_flip() +
       xlab("") +
       theme_bw()
     
