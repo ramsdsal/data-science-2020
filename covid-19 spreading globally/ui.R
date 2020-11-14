@@ -1,16 +1,22 @@
 library(shiny)
+library(leaflet)
+library(dplyr)
+library(ggplot2)
+library(shiny)
 source("main.R")
 
 countries.list <- get.countries.list()
+
+title = "Geographically overview Covid-19"
   
-ui <- fluidPage(title = "Covid-19 Geographically overview",
+ui <- fluidPage(titlePanel(title, windowTitle = title),
                fluidRow(
-                    column(width = 6, offset = 1, h3("Geographically overview - covid-19")),
+                    column(width = 6, offset = 1),
                     column(width = 4, offset = 8, selectInput(
                                                                 inputId = "select.country",
                                                                 choices = unique(countries.list),
-                                                                label = "Selecteer je land",
-                                                                selected = "Wereldwide"
+                                                                label = "Select a country",
+                                                                selected = "Worldwide"
                                                               ) )
                 ),
                 fluidRow(
@@ -19,13 +25,17 @@ ui <- fluidPage(title = "Covid-19 Geographically overview",
                           fluidRow(
                             
                             fluidRow(width = 4, h4(textOutput("country.txt")),align="center",br()),
-                            fluidRow(width = 4,"Totaal aantal gevallen",h4(textOutput("confirmed.cases.txt")), align="center"),
-                            fluidRow(width = 4,"Sterfgevallen", h4(textOutput("confirmed.deaths.txt")), align="center"),
+                            fluidRow(width = 4,"Total cases",h4(textOutput("confirmed.cases.txt")), align="center"),
+                            fluidRow(width = 4,"Total deaths", h4(textOutput("confirmed.deaths.txt")), align="center"),
                             fluidRow(plotOutput("plot.evaluation",height = "200px"))
+                            
                           )
                               
                         )
                       ),
-                   column(width = 9,leafletOutput("world.map",height="420px")) 
-                  )
-                )
+                   column(width = 9,leafletOutput("world.map",height="420px"))
+                  ),
+                fluidRow(textOutput(outputId = "desc"),
+                         tags$a(href = "https://www.kaggle.com/imdevskp/corona-virus-report", "Source: Kaggle", target = "_blank"), align="center") 
+               )
+                

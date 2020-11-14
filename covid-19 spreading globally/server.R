@@ -18,12 +18,12 @@ server <- function(input, output) {
       addTiles() %>%
       setView(selected_country()$longitude,
               selected_country()$latitude,
-              zoom= ifelse(selected_country()$name == "Wereldwide", 2 , 5)) %>%
+              zoom= ifelse(selected_country()$name == "Worldwide", 2 , 5)) %>%
       addCircles(lng = country$longitude,
                  lat = country$latitude,
                  color = "red",
                  stroke = FALSE,
-                 radius = ifelse(country$name != "Wereldwide",sqrt(country$Cumulative_cases)*500,0),
+                 radius = ifelse(country$name != "Worldwide",sqrt(country$Cumulative_cases)*500,0),
                  fillOpacity = 0.5,
                  popup = show.popup(country)
       ) 
@@ -44,6 +44,10 @@ server <- function(input, output) {
   
   output$confirmed.deaths.txt <- renderText({
     get.confirmed.deaths.txt(selected_country())
+  })
+  
+  output$desc <- renderText({
+    get.bron.text()
   })
   
 }
