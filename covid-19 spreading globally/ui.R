@@ -35,7 +35,8 @@ ui <- fluidPage(titlePanel(title, windowTitle = title),
                       ),
                    column(width = 9,leafletOutput("world.map",height="420px"))
                   ),
-                fluidRow(textOutput(outputId = "desc"),
-                         tags$a(href = "https://www.kaggle.com/imdevskp/corona-virus-report", "Source: Kaggle", target = "_blank"), align="center") 
+                fluidRow(
+                  column(width = 6,textOutput(outputId = "desc"),align="right"),
+                  column(width = 6,tags$a(href = "https://www.kaggle.com/imdevskp/corona-virus-report", "Source: Kaggle", target = "_blank"), align="left"))
                )
                 

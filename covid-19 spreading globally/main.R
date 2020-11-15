@@ -68,9 +68,9 @@ show.popup <- function(country){
   popup_label <- paste(
                         country$name,
                           hr(),
-                            "Totaal aantal gevallen: ", country$Cumulative_cases,
+                            "Total cases: ", country$Cumulative_cases,
                               br(),
-                                "Sterfgevallen: ",country$Cumulative_deaths)
+                                "Total deaths: ",country$Cumulative_deaths)
 }
 
 #function: input is row, return txt
