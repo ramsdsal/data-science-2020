@@ -127,11 +127,9 @@ build.country.graphic <- function(country){
         title(main="Infections")
       
         }, warning = function(w) {
-        
+          print(w)
         }, error = function(e) {
-          
-        }, finally = {
-          
+          print(e)
         }
     )
     
