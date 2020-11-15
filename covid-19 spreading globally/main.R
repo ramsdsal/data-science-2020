@@ -137,8 +137,3 @@ build.country.graphic <- function(country){
     
   }
 }
-
-
-
-  
-
